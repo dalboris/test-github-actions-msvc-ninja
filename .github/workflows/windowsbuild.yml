@@ -1,0 +1,65 @@
+name: Windows Build
+
+on: [push, pull_request]
+
+env:
+  BUILD_TYPE: Release
+  MSVC_VERSION: 2019
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    runs-on: windows-2019
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        # We need to fetch more than one commit to get the correct build name
+        fetch-depth: 100
+        submodules: 'recursive'
+
+    # This does the following:
+    # - Download vcpkg (version = given commit ID) to the given directory
+    # - Install vcpkg and all the dependencies listed in vcpkg.json
+    # - Cache the result, using as cache key the commit ID and a hash of
+    #   vcpkg.json, so that we don't need to do it again if neither the
+    #   commit ID of vcpkg.json file changes.
+    # - Set $VCPKG_ROOT as the location where vcpkg was installed
+    # - name: Install vcpkg dependencies
+    #   uses: lukka/run-vcpkg@v10.1
+    #   with:
+    #     vcpkgDirectory: ${{github.workspace}}/vcpkg
+    #     vcpkgGitCommitId: 8518284c18b9f47b1ccae804cb68694181b780a8
+    #     vcpkgJsonGlob: 'vcpkg.json'
+    #     runVcpkgInstall: true
+
+    - name: Setup Developer Command Prompt for VS2019 x64
+      shell: cmd
+      run: |
+        "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=amd64
+        echo %PATH%
+
+    #- name: setup devcmd
+    #  uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Configure
+      working-directory: ${{runner.workspace}}
+      shell: cmd
+      run: |
+        echo %PATH%
+        mkdir build
+        cd build
+        cmake --version
+        cmake %GITHUB_WORKSPACE% -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+    # -DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake -DVCPKG_MANIFEST_MODE=OFF -DVGC_COMMIT_BRANCH=%COMMIT_BRANCH% -DPython_ROOT_DIR="%pythonLocation%" -DQt5_DIR="%Qt5Location%/lib/cmake/Qt5" -DWiX="%WIX%"
+
+    - name: Show CMakeCache
+      if: always()
+      working-directory: ${{runner.workspace}}
+      run: |
+        cd build
+        cat CMakeCache.txt
