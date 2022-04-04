@@ -36,10 +36,31 @@ jobs:
     #     vcpkgJsonGlob: 'vcpkg.json'
     #     runVcpkgInstall: true
 
+    - name: Echo path
+      shell: cmd
+      run: |
+        echo %PATH%
+
     - name: Setup Developer Command Prompt for VS2019 x64
       shell: cmd
       run: |
         "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=amd64
+        echo %PATH%
+
+    - name: Echo path
+      shell: cmd
+      run: |
+        echo %PATH%
+
+    - name: Setup Developer Command Prompt for VS2019 x64
+      shell: cmd
+      run: |
+        cmd /c "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=amd64
+        echo %PATH%
+
+    - name: Echo path
+      shell: cmd
+      run: |
         echo %PATH%
 
     #- name: setup devcmd
