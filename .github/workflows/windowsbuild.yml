@@ -60,7 +60,7 @@ jobs:
         popd
         Write-Host "`nVisual Studio 2019 Command Prompt variables set." -ForegroundColor Yellow
         echo ${env:PATH}
-        cmake .. $GITHUB_WORKSPACE -G Ninja -DCMAKE_BUILD_TYPE=Release
+        cmake ${env:GITHUB_WORKSPACE} -G Ninja -DCMAKE_BUILD_TYPE=Release
         
 
 
