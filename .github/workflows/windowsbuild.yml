@@ -4,7 +4,6 @@ on: [push, pull_request]
 
 env:
   BUILD_TYPE: Release
-  BUILD_ARCH: x64
   VSTOOLS: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\Common7\\Tools"
 
 defaults:
@@ -31,25 +30,20 @@ jobs:
         vcpkgDirectory: ${{github.workspace}}/vcpkg
         vcpkgGitCommitId: 8518284c18b9f47b1ccae804cb68694181b780a8
         vcpkgJsonGlob: 'vcpkg.json'
-        runVcpkgInstall: true
 
-    # Try something else
-    - name: setup devcmd
+    - name: Setup Developer Command Prompt for VS2019 x64
       uses: ilammy/msvc-dev-cmd@v1
 
     - name: Configure
       working-directory: ${{runner.workspace}}
       shell: pwsh
       run: |
-        #pushd ${env:VSTOOLS};cmd /c "VsDevCmd.bat -arch=${env:BUILD_ARCH} & set"|foreach{if($_ -match "="){$v=$_.split("=");set-item -force -path "ENV:\$($v[0])" -value "$($v[1])"}};popd
         mkdir build
         cd build
-        cmake ${env:GITHUB_WORKSPACE} -G Ninja -DCMAKE_BUILD_TYPE="${env:BUILD_TYPE}" -DCMAKE_TOOLCHAIN_FILE="${env:VCPKG_ROOT}\scripts\buildsystems\vcpkg.cmake"
         cmake ${env:GITHUB_WORKSPACE} -G Ninja -DCMAKE_BUILD_TYPE="${env:BUILD_TYPE}" -DCMAKE_TOOLCHAIN_FILE="${env:VCPKG_ROOT}\scripts\buildsystems\vcpkg.cmake"
         
     - name: Build
       working-directory: ${{runner.workspace}}/build
       shell: pwsh
       run: |
-        #pushd ${env:VSTOOLS};cmd /c "VsDevCmd.bat -arch=${env:BUILD_ARCH} & set"|foreach{if($_ -match "="){$v=$_.split("=");set-item -force -path "ENV:\$($v[0])" -value "$($v[1])"}};popd
         cmake --build .
