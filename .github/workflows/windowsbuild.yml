@@ -51,12 +51,9 @@ jobs:
       shell: cmd
       run: |
         echo %PATH%
-        cmd /k "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=amd64
-        cmake %GITHUB_WORKSPACE% -G Ninja -DCMAKE_BUILD_TYPE=Release
+        cmd /k "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=amd64 & echo %PATH% & cmake %GITHUB_WORKSPACE% -G Ninja -DCMAKE_BUILD_TYPE=Release
         echo %PATH%
-        exit
-        echo %PATH%
-        
+
 
     # -DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake -DVCPKG_MANIFEST_MODE=OFF -DVGC_COMMIT_BRANCH=%COMMIT_BRANCH% -DPython_ROOT_DIR="%pythonLocation%" -DQt5_DIR="%Qt5Location%/lib/cmake/Qt5" -DWiX="%WIX%"
 
