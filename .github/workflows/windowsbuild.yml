@@ -46,8 +46,7 @@ jobs:
     #- name: setup devcmd
     #  uses: ilammy/msvc-dev-cmd@v1
 
-    - name: Configure
-      working-directory: ${{runner.workspace}}
+    - name: Setup Visual Studio Command Prompt
       shell: pwsh
       run: |
         pushd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools"
@@ -58,17 +57,20 @@ jobs:
           }
         }
         popd
-        Write-Host "`nVisual Studio 2019 Command Prompt variables set." -ForegroundColor Yellow
+        Write-Host "Visual Studio 2019 Command Prompt variables set."
+        echo "PATH = "
+        echo ${env:PATH}
+
+    - name: Configure
+      working-directory: ${{runner.workspace}}
+      shell: pwsh
+      run: |
+        echo "PATH = "
         echo ${env:PATH}
         cmake ${env:GITHUB_WORKSPACE} -G Ninja -DCMAKE_BUILD_TYPE=Release
         
-
-
-    # -DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake -DVCPKG_MANIFEST_MODE=OFF -DVGC_COMMIT_BRANCH=%COMMIT_BRANCH% -DPython_ROOT_DIR="%pythonLocation%" -DQt5_DIR="%Qt5Location%/lib/cmake/Qt5" -DWiX="%WIX%"
-
-    - name: Show CMakeCache
-      if: always()
-      working-directory: ${{runner.workspace}}
-      run: |
-        cd build
-        cat CMakeCache.txt
+    - name: Build
+      working-directory: ${{runner.workspace}}/build
+      shell: pwsh
+      run: cmake --build .
+        
