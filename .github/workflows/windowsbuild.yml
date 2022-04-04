@@ -5,6 +5,7 @@ on: [push, pull_request]
 env:
   BUILD_TYPE: Release
   MSVC_VERSION: 2019
+  VSTOOLS = "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\Tools"
 
 defaults:
   run:
@@ -50,10 +51,7 @@ jobs:
       working-directory: ${{runner.workspace}}
       shell: pwsh
       run: |
-        pushd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools"
-        cmd /c "VsDevCmd.bat&set" |
-        foreach{if($_ -match "="){$v=$_.split("=");set-item -force -path "ENV:\$($v[0])" -value "$($v[1])"}}
-        popd
+        pushd ${env:VSTOOLS};cmd /c "VsDevCmd.bat&set"|foreach{if($_ -match "="){$v=$_.split("=");set-item -force -path "ENV:\$($v[0])" -value "$($v[1])"}};popd
         mkdir build
         cd build
         cmake ${env:GITHUB_WORKSPACE} -G Ninja -DCMAKE_BUILD_TYPE=Release
@@ -61,9 +59,6 @@ jobs:
     - name: Build
       working-directory: ${{runner.workspace}}/build
       shell: pwsh
-      run: |
-        pushd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools"
-        cmd /c "VsDevCmd.bat&set" |
-        foreach{if($_ -match "="){$v=$_.split("=");set-item -force -path "ENV:\$($v[0])" -value "$($v[1])"}}
-        popd
+      run: | |
+        pushd ${env:VSTOOLS};cmd /c "VsDevCmd.bat&set"|foreach{if($_ -match "="){$v=$_.split("=");set-item -force -path "ENV:\$($v[0])" -value "$($v[1])"}};popd
         cmake --build .
