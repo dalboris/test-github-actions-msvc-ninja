@@ -16,10 +16,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-      with:
-        # We need to fetch more than one commit to get the correct build name
-        fetch-depth: 100
-        submodules: 'recursive'
 
     # This does the following:
     # - Download vcpkg (version = given commit ID) to the given directory
@@ -36,32 +32,16 @@ jobs:
     #     vcpkgJsonGlob: 'vcpkg.json'
     #     runVcpkgInstall: true
 
-    - name: Echo path
-      shell: cmd
-      run: |
-        echo %PATH%
+    # - name: Setup Developer Command Prompt for VS2019 x64
+    #   shell: cmd
+    #   run: |
+    #     cmd /c "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=amd64
+    #     echo %PATH%
 
-    - name: Setup Developer Command Prompt for VS2019 x64
-      shell: cmd
-      run: |
-        "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=amd64
-        echo %PATH%
-
-    - name: Echo path
-      shell: cmd
-      run: |
-        echo %PATH%
-
-    - name: Setup Developer Command Prompt for VS2019 x64
-      shell: cmd
-      run: |
-        cmd /c "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=amd64
-        echo %PATH%
-
-    - name: Echo path
-      shell: cmd
-      run: |
-        echo %PATH%
+    # - name: Echo path
+    #   shell: cmd
+    #   run: |
+    #     echo %PATH%
 
     #- name: setup devcmd
     #  uses: ilammy/msvc-dev-cmd@v1
@@ -70,14 +50,13 @@ jobs:
       working-directory: ${{runner.workspace}}
       shell: cmd
       run: |
-        cmd /c "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=amd64
-        "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=amd64
-        cmd /c "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=amd64
         echo %PATH%
-        mkdir build
-        cd build
-        cmake --version
+        cmd /k "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=amd64
         cmake %GITHUB_WORKSPACE% -G Ninja -DCMAKE_BUILD_TYPE=Release
+        echo %PATH%
+        exit
+        echo %PATH%
+        
 
     # -DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake -DVCPKG_MANIFEST_MODE=OFF -DVGC_COMMIT_BRANCH=%COMMIT_BRANCH% -DPython_ROOT_DIR="%pythonLocation%" -DQt5_DIR="%Qt5Location%/lib/cmake/Qt5" -DWiX="%WIX%"
 
