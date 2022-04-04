@@ -4,7 +4,6 @@ on: [push, pull_request]
 
 env:
   BUILD_TYPE: Release
-  MSVC_VERSION: 2019
   VSTOOLS: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\Common7\\Tools"
 
 defaults:
@@ -25,26 +24,26 @@ jobs:
     #   vcpkg.json, so that we don't need to do it again if neither the
     #   commit ID of vcpkg.json file changes.
     # - Set $VCPKG_ROOT as the location where vcpkg was installed
-    # - name: Install vcpkg dependencies
-    #   uses: lukka/run-vcpkg@v10.1
-    #   with:
-    #     vcpkgDirectory: ${{github.workspace}}/vcpkg
-    #     vcpkgGitCommitId: 8518284c18b9f47b1ccae804cb68694181b780a8
-    #     vcpkgJsonGlob: 'vcpkg.json'
-    #     runVcpkgInstall: true
+    - name: Install vcpkg dependencies
+      uses: lukka/run-vcpkg@v10.1
+      with:
+        vcpkgDirectory: ${{github.workspace}}/vcpkg
+        vcpkgGitCommitId: 8518284c18b9f47b1ccae804cb68694181b780a8
+        vcpkgJsonGlob: 'vcpkg.json'
+
+    - name: Setup Developer Command Prompt for VS2019 x64
+      uses: ilammy/msvc-dev-cmd@v1
 
     - name: Configure
       working-directory: ${{runner.workspace}}
       shell: pwsh
       run: |
-        pushd ${env:VSTOOLS};cmd /c "VsDevCmd.bat&set"|foreach{if($_ -match "="){$v=$_.split("=");set-item -force -path "ENV:\$($v[0])" -value "$($v[1])"}};popd
         mkdir build
         cd build
-        cmake ${env:GITHUB_WORKSPACE} -G Ninja -DCMAKE_BUILD_TYPE="${env:BUILD_TYPE}"
+        cmake ${env:GITHUB_WORKSPACE} -G Ninja -DCMAKE_BUILD_TYPE="${env:BUILD_TYPE}" -DCMAKE_TOOLCHAIN_FILE="${env:VCPKG_ROOT}\scripts\buildsystems\vcpkg.cmake"
         
     - name: Build
       working-directory: ${{runner.workspace}}/build
       shell: pwsh
       run: |
-        pushd ${env:VSTOOLS};cmd /c "VsDevCmd.bat&set"|foreach{if($_ -match "="){$v=$_.split("=");set-item -force -path "ENV:\$($v[0])" -value "$($v[1])"}};popd
         cmake --build .
