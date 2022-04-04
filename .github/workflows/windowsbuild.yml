@@ -46,7 +46,8 @@ jobs:
     #- name: setup devcmd
     #  uses: ilammy/msvc-dev-cmd@v1
 
-    - name: Setup Visual Studio Command Prompt
+    - name: Configure
+      working-directory: ${{runner.workspace}}
       shell: pwsh
       run: |
         pushd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools"
@@ -58,19 +59,11 @@ jobs:
         }
         popd
         Write-Host "Visual Studio 2019 Command Prompt variables set."
-        echo "PATH = "
-        echo ${env:PATH}
-
-    - name: Configure
-      working-directory: ${{runner.workspace}}
-      shell: pwsh
-      run: |
-        echo "PATH = "
-        echo ${env:PATH}
+        mkdir build
+        cd build
         cmake ${env:GITHUB_WORKSPACE} -G Ninja -DCMAKE_BUILD_TYPE=Release
         
     - name: Build
       working-directory: ${{runner.workspace}}/build
       shell: pwsh
       run: cmake --build .
-        
