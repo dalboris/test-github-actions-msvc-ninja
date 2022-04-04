@@ -52,13 +52,8 @@ jobs:
       run: |
         pushd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools"
         cmd /c "VsDevCmd.bat&set" |
-        foreach {
-          if ($_ -match "=") {
-            $v = $_.split("="); set-item -force -path "ENV:\$($v[0])"  -value "$($v[1])"
-          }
-        }
+        foreach{if($_ -match "="){$v=$_.split("=");set-item -force -path "ENV:\$($v[0])" -value "$($v[1])"}}
         popd
-        Write-Host "Visual Studio 2019 Command Prompt variables set."
         mkdir build
         cd build
         cmake ${env:GITHUB_WORKSPACE} -G Ninja -DCMAKE_BUILD_TYPE=Release
@@ -67,4 +62,8 @@ jobs:
       working-directory: ${{runner.workspace}}/build
       shell: pwsh
       run: |
+        pushd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools"
+        cmd /c "VsDevCmd.bat&set" |
+        foreach{if($_ -match "="){$v=$_.split("=");set-item -force -path "ENV:\$($v[0])" -value "$($v[1])"}}
+        popd
         cmake --build .
