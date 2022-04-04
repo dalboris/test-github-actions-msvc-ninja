@@ -33,11 +33,6 @@ jobs:
     #     vcpkgJsonGlob: 'vcpkg.json'
     #     runVcpkgInstall: true
 
-    - name: Echo BUILD_TYPE
-      shell: pwsh
-      run: |
-        echo ${env:BUILD_TYPE}
-
     - name: Configure
       working-directory: ${{runner.workspace}}
       shell: pwsh
